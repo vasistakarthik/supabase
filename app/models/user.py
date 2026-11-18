@@ -1,33 +1,19 @@
 
-from sqlalchemy import Integer, String, Boolean, Identity
-from sqlalchemy.orm import Mapped, mapped_column
-
-from app.db.connection import Base
+from dataclasses import dataclass
+from typing import Optional
 
 
-class User(Base):
+@dataclass
+class User:
 
-    __tablename__ = "users"
+    email: str
+    hashed_password: str
+    id: Optional[str] = None
+    is_active: bool = True
 
-    id: Mapped[int] = mapped_column(
-        Integer,
-        Identity(always=True),
-        primary_key=True
-    )
-
-    email: Mapped[str] = mapped_column(
-        String(150),
-        unique=True,
-        nullable=False
-    )
-
-    hashed_password: Mapped[str] = mapped_column(
-        String(255),
-        nullable=False
-    )
-
-    is_active: Mapped[bool] = mapped_column(
-        Boolean,
-        default=True,
-        nullable=False
-    )
+    def to_dict(self) -> dict:
+        return {
+            "email": self.email,
+            "hashed_password": self.hashed_password,
+            "is_active": self.is_active
+        }

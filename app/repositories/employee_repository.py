@@ -1,54 +1,67 @@
-
-from sqlalchemy.orm import Session
-
-from app.models.employee import Employee
+from app.db.connection import supabase_connection
 
 
 class EmployeeRepository:
 
-    def get_all_employees(self, db: Session):
+    def __init__(self):
+        self.client = supabase_connection.connect()
 
-        return db.query(Employee).all()
+    def get_all_employees(self):
 
-    def create_employee(self, db: Session, employee_data: dict):
-
-        employee = Employee(**employee_data)
-
-        db.add(employee)
-        db.commit()
-        db.refresh(employee)
-
-        return employee
-
-    def get_employee_by_id(self, db: Session, employee_id: int):
-
-        return (
-            db.query(Employee)
-            .filter(Employee.id == employee_id)
-            .first()
+        response = (
+            self.client
+            .table("employees")
+            .select("*")
+            .execute()
         )
 
-    def update_employee(
-        self,
-        db: Session,
-        employee: Employee,
-        employee_data: dict
-    ):
+        return response.data
 
-        for key, value in employee_data.items():
-            setattr(employee, key, value)
+    def create_employee(self, employee):
 
-        db.commit()
-        db.refresh(employee)
+        response = (
+            self.client
+            .table("employees")
+            .insert(employee.to_dict())
+            .execute()
+        )
 
-        return employee
+        return response.data
 
-    def delete_employee(self, db: Session, employee: Employee):
+    def get_employee_by_id(self, employee_id: int):
 
-        db.delete(employee)
-        db.commit()
+        response = (
+            self.client
+            .table("employees")
+            .select("*")
+            .eq("id", employee_id)
+            .execute()
+        )
 
-        return employee
+        return response.data
 
+    def update_employee(self, employee_id: int, employee_data: dict):
 
+        response = (
+            self.client
+            .table("employees")
+            .update(employee_data)
+            .eq("id", employee_id)
+            .execute()
+        )
+
+        return response.data
+
+    def delete_employee(self, employee_id: int):
+
+        response = (
+            self.client
+            .table("employees")
+            .delete()
+            .eq("id", employee_id)
+            .execute()
+        )
+
+        return response.data
+        
 employee_repository = EmployeeRepository()

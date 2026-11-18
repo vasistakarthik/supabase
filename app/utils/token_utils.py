@@ -32,7 +32,7 @@ class TokenManager:
             self.secret_key,
             algorithm=self.algorithm
         )
-        print("JWT access token generated successfully!")
+
         return token
 
     def verify_access_token(self, token: str) -> dict | None:

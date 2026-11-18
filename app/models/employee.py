@@ -1,49 +1,22 @@
 
-from sqlalchemy import (
-    BigInteger,
-    String,
-    Numeric,
-    Identity,
-    DateTime,
-    func
-)
-from sqlalchemy.orm import Mapped, mapped_column
-
-from app.db.connection import Base
+from dataclasses import dataclass
+from typing import Optional
 
 
-class Employee(Base):
+@dataclass
+class Employee:
 
-    __tablename__ = "employees"
+    name: str
+    email: str
+    department: Optional[str] = None
+    salary: Optional[float] = None
+    id: Optional[int] = None
 
-    id: Mapped[int] = mapped_column(
-        BigInteger,
-        Identity(always=True),
-        primary_key=True
-    )
+    def to_dict(self) -> dict:
 
-    name: Mapped[str] = mapped_column(
-        String(100),
-        nullable=False
-    )
-
-    email: Mapped[str] = mapped_column(
-        String(150),
-        unique=True,
-        nullable=False
-    )
-
-    department: Mapped[str | None] = mapped_column(
-        String(100),
-        nullable=True
-    )
-
-    salary: Mapped[float | None] = mapped_column(
-        Numeric(10, 2),
-        nullable=True
-    )
-
-    created_at: Mapped[DateTime] = mapped_column(
-        DateTime(timezone=True),
-        server_default=func.now()
-    )
+        return {
+            "name": self.name,
+            "email": self.email,
+            "department": self.department,
+            "salary": self.salary
+        }

@@ -1,38 +1,40 @@
 
-from sqlalchemy.orm import Session
-
-from app.models.user import User
+from app.db.connection import supabase_connection
 
 
 class UserRepository:
 
-    # Find user by email
-    def get_user_by_email(
-        self,
-        db: Session,
-        email: str
-    ):
+    def __init__(self):
+        self.client = supabase_connection.connect()
 
-        return (
-            db.query(User)
-            .filter(User.email == email)
-            .first()
+    # Get user by email
+    def get_user_by_email(self, email: str):
+
+        response = (
+            self.client
+            .table("users")
+            .select("*")
+            .eq("email", email)
+            .execute()
         )
 
+        if response.data:
+            return response.data[0]
+
+        return None
+
     # Create a new user
-    def create_user(
-        self,
-        db: Session,
-        user_data: dict
-    ):
+    def create_user(self, user):
 
-        user = User(**user_data)
+        response = (
+            self.client
+            .table("users")
+            .insert(user.to_dict())
+            .execute()
+        )
 
-        db.add(user)
-        db.commit()
-        db.refresh(user)
-
-        return user
+        return response.data
 
 
+# Create repository object
 user_repository = UserRepository()

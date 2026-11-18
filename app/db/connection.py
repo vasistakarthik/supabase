@@ -1,30 +1,37 @@
 
-from supabase import Client, create_client
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker, DeclarativeBase
 
 from app.core.config import settings
 
 
-class SupabaseConnection:
-
-    def __init__(self):
-        self._client = None
-
-    def connect(self) -> Client:
-
-        if self._client is None:
-
-            if not settings.SUPABASE_URL:
-                raise ValueError("SUPABASE_URL is missing")
-
-            if not settings.SUPABASE_KEY:
-                raise ValueError("SUPABASE_KEY is missing")
-
-            self._client = create_client(
-                settings.SUPABASE_URL,
-                settings.SUPABASE_KEY
-            )
-
-        return self._client
+# Check database URL
+if not settings.DATABASE_URL:
+    raise ValueError("DATABASE_URL is missing")
 
 
-supabase_connection = SupabaseConnection()
+# Create database engine
+engine = create_engine(
+    settings.DATABASE_URL,
+    pool_pre_ping=True
+)
+
+
+# Create database session factory
+SessionLocal = sessionmaker(
+    bind=engine,
+    autocommit=False,
+    autoflush=False
+)
+
+
+# Base class for database models
+class Base(DeclarativeBase):
+    pass
+
+try:
+    with engine.connect() as connection:
+        print("PostgreSQL connected successfully!")
+except Exception as e:
+    print("PostgreSQL connection failed!")
+    raise

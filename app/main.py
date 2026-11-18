@@ -1,4 +1,6 @@
 
+import logging
+
 from fastapi import FastAPI
 from fastapi.openapi.docs import get_swagger_ui_html
 from fastapi.staticfiles import StaticFiles
@@ -10,6 +12,13 @@ from app.api.endpoints.employees import router as employee_router
 from app.api.endpoints.auth import router as auth_router
 
 
+# Configure application logging
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(name)s - %(message)s"
+)
+
+
 # Create FastAPI application
 app = FastAPI(
     title=settings.APP_NAME,
@@ -18,7 +27,7 @@ app = FastAPI(
     redoc_url=None
 )
 
-# Set OpenAPI version for Swagger UI compatibility
+# Swagger UI compatibility
 app.openapi_version = "3.0.3"
 
 
@@ -45,6 +54,7 @@ def custom_swagger_ui():
 
 # Register Employee APIs
 app.include_router(employee_router)
+
 
 # Register Authentication APIs
 app.include_router(auth_router)

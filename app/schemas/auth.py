@@ -2,6 +2,12 @@
 from pydantic import BaseModel, EmailStr, Field
 
 
+class RegisterRequest(BaseModel):
+
+    email: EmailStr
+    password: str = Field(min_length=8)
+
+
 class LoginRequest(BaseModel):
 
     email: EmailStr
@@ -16,6 +22,6 @@ class TokenResponse(BaseModel):
 
 class UserResponse(BaseModel):
 
-    id: str
+    id: int
     email: EmailStr
     is_active: bool

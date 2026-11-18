@@ -1,8 +1,14 @@
 
+import logging
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, DeclarativeBase
 
 from app.core.config import settings
+
+
+# Create module logger
+logger = logging.getLogger(__name__)
 
 
 # Check database URL
@@ -29,9 +35,14 @@ SessionLocal = sessionmaker(
 class Base(DeclarativeBase):
     pass
 
-try:
-    with engine.connect() as connection:
-        print("PostgreSQL connected successfully!")
-except Exception as e:
-    print("PostgreSQL connection failed!")
-    raise
+
+# Check database connection when requested
+def check_database_connection():
+
+    try:
+        with engine.connect():
+            logger.info("PostgreSQL connected successfully!")
+
+    except Exception:
+        logger.exception("PostgreSQL connection failed!")
+        raise

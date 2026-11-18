@@ -1,6 +1,7 @@
 
 from sqlalchemy import (
     BigInteger,
+    Integer,
     String,
     Numeric,
     Identity,
@@ -17,7 +18,7 @@ class Employee(Base):
     __tablename__ = "employees"
 
     id: Mapped[int] = mapped_column(
-        BigInteger,
+        BigInteger().with_variant(Integer, "sqlite"),
         Identity(always=True),
         primary_key=True
     )

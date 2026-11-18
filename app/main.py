@@ -1,6 +1,4 @@
 
-import logging
-
 from fastapi import FastAPI
 from fastapi.openapi.docs import get_swagger_ui_html
 from fastapi.staticfiles import StaticFiles
@@ -10,13 +8,12 @@ from swagger_ui_bundle import swagger_ui_path
 from app.core.config import settings
 from app.api.endpoints.employees import router as employee_router
 from app.api.endpoints.auth import router as auth_router
+from app.utils.logging.logging_config import setup_logging
+from app.db.connection import check_database_connection
 
 
 # Configure application logging
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(name)s - %(message)s"
-)
+setup_logging()
 
 
 # Create FastAPI application
@@ -26,6 +23,15 @@ app = FastAPI(
     docs_url=None,
     redoc_url=None
 )
+
+
+# Check PostgreSQL connection during application startup
+@app.on_event("startup")
+def startup_event():
+
+    if settings.APP_ENV != "test":
+        check_database_connection()
+
 
 # Swagger UI compatibility
 app.openapi_version = "3.0.3"

@@ -5,7 +5,9 @@ import jwt
 from jwt.exceptions import InvalidTokenError
 
 from app.core.config import settings
+import logging
 
+logger = logging.getLogger(__name__)
 
 class TokenManager:
 
@@ -32,7 +34,7 @@ class TokenManager:
             self.secret_key,
             algorithm=self.algorithm
         )
-        print("JWT access token generated successfully!")
+        logger.info("JWT access token generated successfully!")
         return token
 
     def verify_access_token(self, token: str) -> dict | None:

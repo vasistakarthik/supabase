@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 500" width="100%" height="100%">
+  <defs>
+    <style>
+      .title { font-family: 'Segoe UI', Arial, sans-serif; font-size: 20px; font-weight: bold; fill: #1e293b; }
+      .box { rx: 8; ry: 8; stroke-width: 2; }
+      .box-client { fill: #eff6ff; stroke: #3b82f6; }
+      .box-router { fill: #f0fdf4; stroke: #22c55e; }
+      .box-service { fill: #fefce8; stroke: #eab308; }
+      .box-util { fill: #fdf2f8; stroke: #ec4899; }
+      .box-db { fill: #f5f3ff; stroke: #8b5cf6; }
+      .text-title { font-family: 'Segoe UI', Arial, sans-serif; font-size: 13px; font-weight: bold; fill: #0f172a; }
+      .text-sub { font-family: 'Segoe UI', Arial, sans-serif; font-size: 11px; fill: #475569; }
+      .arrow { stroke: #64748b; stroke-width: 2; fill: none; marker-end: url(#arrowhead); }
+      .label { font-family: 'Segoe UI', Arial, sans-serif; font-size: 11px; fill: #0284c7; font-weight: 600; }
+    </style>
+    <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#64748b" />
+    </marker>
+  </defs>
+
+  <rect width="900" height="500" fill="#ffffff" />
+  <text x="450" y="35" text-anchor="middle" class="title">User Authentication Flow (POST /auth/login)</text>
+
+  <!-- Step 1: Client sends login -->
+  <rect x="40" y="80" width="150" height="80" class="box box-client" />
+  <text x="115" y="110" text-anchor="middle" class="text-title">Client</text>
+  <text x="115" y="130" text-anchor="middle" class="text-sub">POST /auth/login</text>
+  <text x="115" y="145" text-anchor="middle" class="text-sub">{email, password}</text>
+
+  <!-- Step 2: Router -->
+  <rect x="240" y="80" width="160" height="80" class="box box-router" />
+  <text x="320" y="110" text-anchor="middle" class="text-title">Auth Router</text>
+  <text x="320" y="130" text-anchor="middle" class="text-sub">LoginRequest Schema</text>
+  <text x="320" y="145" text-anchor="middle" class="text-sub">auth_service.login()</text>
+
+  <!-- Step 3: Service -->
+  <rect x="450" y="80" width="180" height="80" class="box box-service" />
+  <text x="540" y="105" text-anchor="middle" class="text-title">AuthService.login()</text>
+  <text x="540" y="125" text-anchor="middle" class="text-sub">1. Query user by email</text>
+  <text x="540" y="140" text-anchor="middle" class="text-sub">2. Check is_active flag</text>
+
+  <!-- Step 4: DB Query -->
+  <rect x="680" y="80" width="170" height="80" class="box box-db" />
+  <text x="765" y="110" text-anchor="middle" class="text-title">PostgreSQL (Supabase)</text>
+  <text x="765" y="130" text-anchor="middle" class="text-sub">SELECT * FROM users</text>
+  <text x="765" y="145" text-anchor="middle" class="text-sub">WHERE email = :email</text>
+
+  <path d="M 190 120 L 240 120" class="arrow" />
+  <path d="M 400 120 L 450 120" class="arrow" />
+  <path d="M 630 120 L 680 120" class="arrow" />
+
+  <!-- Verification Step -->
+  <rect x="680" y="240" width="170" height="80" class="box box-util" />
+  <text x="765" y="265" text-anchor="middle" class="text-title">PasswordManager</text>
+  <text x="765" y="285" text-anchor="middle" class="text-sub">verify_password()</text>
+  <text x="765" y="300" text-anchor="middle" class="text-sub">Argon2 Constant-Time</text>
+
+  <path d="M 765 160 L 765 240" class="arrow" />
+  <text x="775" y="200" class="label">User Found</text>
+
+  <!-- Token Generation -->
+  <rect x="450" y="240" width="180" height="80" class="box box-util" />
+  <text x="540" y="265" text-anchor="middle" class="text-title">TokenManager</text>
+  <text x="540" y="285" text-anchor="middle" class="text-sub">create_access_token()</text>
+  <text x="540" y="300" text-anchor="middle" class="text-sub">Sign HS256 JWT (exp: 30m)</text>
+
+  <path d="M 680 280 L 630 280" class="arrow" />
+  <text x="655" y="270" text-anchor="middle" class="label">Pass OK</text>
+
+  <!-- Router Return -->
+  <rect x="240" y="240" width="160" height="80" class="box box-router" />
+  <text x="320" y="270" text-anchor="middle" class="text-title">TokenResponse Schema</text>
+  <text x="320" y="290" text-anchor="middle" class="text-sub">{access_token: "...",</text>
+  <text x="320" y="305" text-anchor="middle" class="text-sub">token_type: "bearer"}</text>
+
+  <path d="M 450 280 L 400 280" class="arrow" />
+
+  <!-- Client Return -->
+  <rect x="40" y="240" width="150" height="80" class="box box-client" />
+  <text x="115" y="270" text-anchor="middle" class="text-title">HTTP 200 OK</text>
+  <text x="115" y="290" text-anchor="middle" class="text-sub">Client receives JWT</text>
+  <text x="115" y="305" text-anchor="middle" class="text-sub">for Authorization header</text>
+
+  <path d="M 240 280 L 190 280" class="arrow" />
+
+  <!-- Footer box -->
+  <rect x="40" y="380" width="810" height="80" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-dasharray="4 4" />
+  <text x="60" y="410" font-family="'Segoe UI', Arial, sans-serif" font-size="13px" font-weight="bold" fill="#0f172a">Stateless Architecture:</text>
+  <text x="60" y="435" font-family="'Segoe UI', Arial, sans-serif" font-size="12px" fill="#475569">The server does not maintain session tables in the database. Every subsequent request self-authenticates via the signed cryptographic JWT.</text>
+</svg>

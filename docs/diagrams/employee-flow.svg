@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 520" width="100%" height="100%">
+  <defs>
+    <style>
+      .title { font-family: 'Segoe UI', Arial, sans-serif; font-size: 20px; font-weight: bold; fill: #1e293b; }
+      .box { rx: 8; ry: 8; stroke-width: 2; }
+      .box-client { fill: #eff6ff; stroke: #3b82f6; }
+      .box-sec { fill: #fdf2f8; stroke: #ec4899; }
+      .box-router { fill: #f0fdf4; stroke: #22c55e; }
+      .box-service { fill: #fefce8; stroke: #eab308; }
+      .box-repo { fill: #fff7ed; stroke: #f97316; }
+      .box-db { fill: #f5f3ff; stroke: #8b5cf6; }
+      .text-title { font-family: 'Segoe UI', Arial, sans-serif; font-size: 13px; font-weight: bold; fill: #0f172a; }
+      .text-sub { font-family: 'Segoe UI', Arial, sans-serif; font-size: 11px; fill: #475569; }
+      .arrow { stroke: #64748b; stroke-width: 2; fill: none; marker-end: url(#arrowhead); }
+      .label { font-family: 'Segoe UI', Arial, sans-serif; font-size: 11px; fill: #0284c7; font-weight: 600; }
+    </style>
+    <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#64748b" />
+    </marker>
+  </defs>
+
+  <rect width="920" height="520" fill="#ffffff" />
+  <text x="460" y="35" text-anchor="middle" class="title">Authenticated Employee CRUD Architecture Flow</text>
+
+  <!-- Step 1: Client Request -->
+  <rect x="30" y="80" width="140" height="80" class="box box-client" />
+  <text x="100" y="105" text-anchor="middle" class="text-title">Client</text>
+  <text x="100" y="125" text-anchor="middle" class="text-sub">GET /employees/</text>
+  <text x="100" y="140" text-anchor="middle" class="text-sub">Header: Bearer &lt;JWT&gt;</text>
+
+  <!-- Step 2: Security Gatekeeper -->
+  <rect x="220" y="80" width="160" height="80" class="box box-sec" />
+  <text x="300" y="105" text-anchor="middle" class="text-title">core/security.py</text>
+  <text x="300" y="125" text-anchor="middle" class="text-sub">get_current_user()</text>
+  <text x="300" y="140" text-anchor="middle" class="text-sub">Verify signature &amp; exp</text>
+
+  <!-- Step 3: API Router -->
+  <rect x="430" y="80" width="140" height="80" class="box box-router" />
+  <text x="500" y="105" text-anchor="middle" class="text-title">Employees Router</text>
+  <text x="500" y="125" text-anchor="middle" class="text-sub">Inject get_db()</text>
+  <text x="500" y="140" text-anchor="middle" class="text-sub">Call service layer</text>
+
+  <!-- Step 4: Employee Service -->
+  <rect x="620" y="80" width="140" height="80" class="box box-service" />
+  <text x="690" y="105" text-anchor="middle" class="text-title">EmployeeService</text>
+  <text x="690" y="125" text-anchor="middle" class="text-sub">Business logic,</text>
+  <text x="690" y="140" text-anchor="middle" class="text-sub">data normalization</text>
+
+  <!-- Step 5: Repository -->
+  <rect x="620" y="240" width="140" height="80" class="box box-repo" />
+  <text x="690" y="265" text-anchor="middle" class="text-title">EmployeeRepository</text>
+  <text x="690" y="285" text-anchor="middle" class="text-sub">db.query(Employee)</text>
+  <text x="690" y="300" text-anchor="middle" class="text-sub">Encapsulated queries</text>
+
+  <!-- Step 6: Database -->
+  <rect x="620" y="400" width="140" height="80" class="box box-db" />
+  <text x="690" y="425" text-anchor="middle" class="text-title">PostgreSQL (Supabase)</text>
+  <text x="690" y="445" text-anchor="middle" class="text-sub">Table 'employees'</text>
+  <text x="690" y="460" text-anchor="middle" class="text-sub">Row results returned</text>
+
+  <!-- Forward Arrows -->
+  <path d="M 170 120 L 220 120" class="arrow" />
+  <path d="M 380 120 L 430 120" class="arrow" />
+  <text x="405" y="110" text-anchor="middle" class="label">Auth OK</text>
+  <path d="M 570 120 L 620 120" class="arrow" />
+  <path d="M 690 160 L 690 240" class="arrow" />
+  <path d="M 690 320 L 690 400" class="arrow" />
+  <text x="700" y="365" class="label">SQL</text>
+
+  <!-- Return Flow -->
+  <path d="M 620 440 L 500 440 L 500 320" class="arrow" />
+  <text x="480" y="380" text-anchor="middle" class="label">Data rows</text>
+
+  <rect x="430" y="240" width="140" height="80" class="box box-router" />
+  <text x="500" y="265" text-anchor="middle" class="text-title">Pydantic Serializer</text>
+  <text x="500" y="285" text-anchor="middle" class="text-sub">EmployeeResponse</text>
+  <text x="500" y="300" text-anchor="middle" class="text-sub">from_attributes=True</text>
+
+  <rect x="30" y="240" width="140" height="80" class="box box-client" />
+  <text x="100" y="265" text-anchor="middle" class="text-title">HTTP 200 OK</text>
+  <text x="100" y="285" text-anchor="middle" class="text-sub">JSON array returned</text>
+  <text x="100" y="300" text-anchor="middle" class="text-sub">db.close() released</text>
+
+  <path d="M 430 280 L 170 280" class="arrow" />
+  <text x="300" y="270" text-anchor="middle" class="label">JSON Output</text>
+</svg>
